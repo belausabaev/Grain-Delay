@@ -1,21 +1,44 @@
+/*
+
+var audioCtx = new (window.AudioContext || window.webkitAudioContext);
+var mediaElem = document.querySelector('audio');
+var stream = audioCtx.createMediaElementSource(mediaElem);
+var gainNode = audioCtx.createGain();
+
+// This a normal connection between to native AudioNodes.
+stream.connect(gainNode);
+
+// Set the context used by Tone.js
+Tone.context = audioCtx;
+
+var pitchShift = new Tone.PitchShift();
+
+// Use the Tone.connect() helper to connect native AudioNodes with the nodes provided by Tone.js
+Tone.connect(gainNode, pitchShift);
+Tone.connect(pitchShift, audioCtx.destination);
+
+*/
 
 let outGain = 2.1;
 
 
-const gainNode = new Tone.Gain(outGain).toDestination();
-const delay = new Tone.Delay(2.5).toDestination();
+const gainNode2 = new Tone.Gain(outGain).toDestination();
+const delay = new Tone.Delay(0.4).toDestination();
 // delayTime, feedback amount // only adds delay
-const feedbackDelay = new Tone.FeedbackDelay(0.3, 0.7).toDestination();
+const feedbackDelay = new Tone.FeedbackDelay(0.2, 0.8).toDestination();
 // delayTime, resonance // adds vibration
-const fbcombfilter = new Tone.FeedbackCombFilter(0.3,0.7).toDestination();
+const fbcombfilter = new Tone.FeedbackCombFilter(0.2, 0.5).toDestination();
+
+Tone.FeedbackCombFilter.dry = 0;
+Tone.FeedbackCombFilter.wet = 1;
 
 //const filter = new Tone.BiquadFilter(4000, "highpass").toDestination();
-const filter = new Tone.Filter(15000, "lowpass").toDestination();
+const filter = new Tone.Filter(15000, "highpass").toDestination();
 filter.frequency.rampTo(20000, 10);
 
 var convolver = new Tone.Convolver();
 var duration = 1;
-var decay =  10;
+var decay = 10;
 var reverse = true;
 convolver.buffer = createImpulseResponse(duration, decay, reverse);
 //var wet = 0.5;
@@ -28,69 +51,91 @@ let audioFile2 = "guitar.wav";
 
 
 
-const eq = new Tone.EQ3(-6,-6,10).toDestination();
+const eq = new Tone.EQ3(-6, -6, 10).toDestination();
 
 const dist = new Tone.Distortion(2000).toDestination();
 
 const phaser = new Tone.Phaser({
-	frequency: 50,
-	octaves: 1,
-	baseFrequency: 10000
+  frequency: 50,
+  octaves: 1,
+  baseFrequency: 10000
 }).toDestination();
 
 const stereowid = new Tone.StereoWidener(0.7).toDestination();
 
-const pitchsh = new Tone.PitchShift(5).toDestination();
+const pitchsh = new Tone.PitchShift(12).toDestination();
 
-gp = new Tone.GrainPlayer(audioFile, () => {
+const audioBuffer = new Tone.ToneBufferSource(audioFile, () => {
+  console.log('loaded');
+});
 
-    //gp.detune = 300;
+audioBuffer.connect(feedbackDelay).toDestination();
 
-    gp.detune = 2000
-    gp.grainSize = 0.07
-    gp.overlap = 0.85
-    gp.loop = false;
-    gp.playbackRate = 1
-    console.log("GrainPlayer loaded!")
-    console.log("gp.playbackRate:", gp.playbackRate)
-    console.log("gp.grainSize", gp.grainSize)
-  }).connect(phaser).connect(filter).connect(fbcombfilter).connect(feedbackDelay).toDestination();
+
+let feedForward = [1.00020298, 1.0004059599, 1.00020298];
+let feedBack = [2.0126964558, -2.9991880801, 2.9873035442];
+
+const iirFilter = Tone.getContext().rawContext.createIIRFilter(feedForward, feedBack);
+
+Tone.FeedbackDelay.wet = 1;
+
+
+gp = new Tone.GrainPlayer(audioBuffer.buffer, () => {
+
+  //gp.detune = 300;
+
+  // gp.detune = 2000
+  gp.grainSize = "0.5t"
+  gp.overlap = 0.1
+  gp.loop = false;
+  gp.playbackRate = 1
+  console.log("GrainPlayer loaded!")
+  console.log("gp.playbackRate:", gp.playbackRate)
+  console.log("gp.grainSize", gp.grainSize)
+}).connect(pitchsh).connect(filter).connect(feedbackDelay).toDestination(); 
 // mit convolver -> echo
 //mit feedbackDelay -> reverb, 8n, 16b, 8t, // 1n -> langes echo
 
 
+let offlineCtx = new OfflineAudioContext(1, 44100 * 40, 44100);
+source = offlineCtx.createBufferSource();
 
-const distortion = new Tone.Distortion();
+
+const offlBuf = new Tone.ToneBufferSource().toDestination();
+
+Tone.Offline(() => {
+  console.log(audioBuffer);
 
 
-const audioBuffer = new Tone.ToneBufferSource(audioFile, () => {
-    console.log('loaded');
-}).connect(phaser).connect(filter).connect(fbcombfilter).connect(new Tone.Reverb(0.4).toDestination()).connect(feedbackDelay).toDestination();
+   //gp.start();
+}, 2).then((bufferD) => {
+  offlBuf.buffer = bufferD;
+  console.log(bufferD);
+})
+
 
 //audioBuffer.start();
 //audioBuffer.connect(delay).toDestination();
 
-const player = new Tone.Player(audioFile2);
 
-player.connect(feedbackDelay).connect(gainNode).toDestination();
 
 /*
 var feedbackDelay2 = new Tone.FeedbackDelay(0.05, 0.94).toDestination();
 var tom = new Tone.MembraneSynth({
-	"octaves" : 4,
-	"pitchDecay" : 0.1
+  "octaves" : 4,
+  "pitchDecay" : 0.1
 }).connect(feedbackDelay2);
 tom.triggerAttackRelease("A2","32n");
 */
 
- // gp.start();
+// gp.start();
 
 //audioBuffer.connect(delay).connect(gainNode).toDestination().start();
 /*
 const feedbackDelay = new Tone.FeedbackDelay("8n", 0.5).toDestination();
 const tom = new Tone.MembraneSynth({
-	octaves: 4,
-	pitchDecay: 0.1
+  octaves: 4,
+  pitchDecay: 0.1
 }).connect(feedbackDelay);
 tom.triggerAttackRelease("A2", "32n");
 */
