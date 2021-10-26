@@ -42,8 +42,11 @@ btnSound.on('click', () => {
             anchor.href = url;
             anchor.click();
         }, 60000);
-        */
-        gp.start();
+    */
+        //audioBuffer.start();
+        
+      
+       gp.start();
       //  console.log("started gp");
         //player.start();
         //audioBuffer.start();
