@@ -73,7 +73,10 @@ const pitchsh = new Tone.PitchShift(12).toDestination();
 
 const audioBuffer = new Tone.ToneBufferSource(audioFile, () => {
   console.log('loaded');
-});
+}).toDestination();
+
+
+
 
 //audioBuffer.connect(feedbackDelay).toDestination();
 
@@ -84,7 +87,7 @@ let feedBack = [2.0126964558, -2.9991880801, 2.9873035442];
 const iirFilter = Tone.getContext().rawContext.createIIRFilter(feedForward, feedBack);
 
 
-Tone.FeedbackDelay.wet = 0.7;
+Tone.FeedbackDelay.wet = 0.5;
 
 const feedbackDelay = new Tone.FeedbackDelay(0.1, 0.2).toDestination();
 const feedbackDelay2 = new Tone.FeedbackDelay(0.15, 0.4).toDestination();
@@ -97,7 +100,7 @@ const feedbackDelay8 = new Tone.FeedbackDelay(0.45, 0.45).toDestination();
 const feedbackDelay9 = new Tone.FeedbackDelay(0.5, 0.5).toDestination();
 const feedbackDelay10 = new Tone.FeedbackDelay(0.55, 0.55).toDestination();
 const feedbackDelay11 = new Tone.FeedbackDelay(0.6, 0.6).toDestination();
-//const feedbackDelay12 = new Tone.FeedbackDelay(0.65, 0.65).toDestination();
+const feedbackDelay12 = new Tone.FeedbackDelay(0.7, 0.7).toDestination();
 
 const reverb = new Tone.Reverb(0.05).toDestination();
 //const cheby = new Tone.Chebychev(3).toDestination();
@@ -107,14 +110,15 @@ gp = new Tone.GrainPlayer(audioBuffer.buffer, () => {
   //gp.detune = 300;
 
   gp.detune = 1010
-  gp.grainSize = 0.9
-  gp.overlap = 0.4
+  gp.grainSize = 0.1
+  gp.overlap = 0.09
   gp.loop = false; 
-  gp.playbackRate = 0.95
+  gp.playbackRate = 0.9
   console.log("GrainPlayer loaded!")
   console.log("gp.playbackRate:", gp.playbackRate)
   console.log("gp.grainSize", gp.grainSize)
-}).connect(feedbackDelay).connect(feedbackDelay2).connect(feedbackDelay3).connect(feedbackDelay4).connect(feedbackDelay5).connect(feedbackDelay6).connect(feedbackDelay7).connect(feedbackDelay8).connect(feedbackDelay9).connect(feedbackDelay10).connect(feedbackDelay11).toDestination();
+}).connect(feedbackDelay11).connect(feedbackDelay12).connect(feedbackDelay3).toDestination();
+//.connect(feedbackDelay).connect(feedbackDelay2).connect(feedbackDelay3).connect(feedbackDelay4).connect(feedbackDelay5).connect(feedbackDelay6).connect(feedbackDelay7).connect(feedbackDelay8).connect(feedbackDelay9).connect(feedbackDelay10).connect(feedbackDelay11).toDestination();
 //.connect(pitchsh).connect(filter).connect(feedbackDelay).toDestination(); 
 // mit convolver -> echo
 //mit feedbackDelay -> reverb, 8n, 16b, 8t, // 1n -> langes echo

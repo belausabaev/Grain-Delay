@@ -24,7 +24,7 @@ btnSound.on('click', () => {
     } else {
         Tone.start();
         playing = true;
-        /*
+        
         const recorder = new Tone.Recorder();
         gp.connect(recorder);
         // start recording
@@ -41,13 +41,57 @@ btnSound.on('click', () => {
             anchor.download = "recording.webm";
             anchor.href = url;
             anchor.click();
-        }, 60000);
-    */
-        //audioBuffer.start();
-        
+        }, 70000);
+    
+        //gp.start();
+        let len = audioBuffer.buffer.length;
+        let att = 0.1;
+        let dec = 0.1;
+
+        /*
+            for(let i = 0; i < len/50; i + 50){
+                buf = new Tone.ToneBufferSource().toDestination();
+                buf.buffer = audioBuffer.buffer;
+                buf.start(Tone.now(),(audioBuffer.buffer.length*i)/audioBuffer.buffer.length);
+                buf.stop(Tone.now()+(audioBuffer.buffer.length*i)/audioBuffer.buffer.length);
+                
+            }
+            */
+
       
-       gp.start();
-      //  console.log("started gp");
+
+/*
+        for (let i = 0; i < 50; i + 0.1) {
+            
+            const buf = new Tone.ToneBufferSource().toDestination();
+            buf.buffer = audioBuffer.buffer;
+            grainGain = new Tone.Gain();
+            contour = new Tone.Gain();
+
+            contour.gain.setValueAtTime(0, Tone.now());
+            contour.gain.exponentialRampToValueAtTime(0.6, Tone.now() + att);
+            contour.gain.exponentialRampToValueAtTime(0, Tone.now() + (att + dec));
+
+            contour.connect(grainGain);
+
+            grainGain.toDestination();
+            buf.connect(contour);
+
+            buf.start(Tone.now(), (len * i) / len + Math.random(0,1), (att + dec));
+            //buf.stop(Tone.now()+(att+dec));
+            
+            grainGain.disconnect();
+        
+
+        }
+        console.log(Tone.getContext().rawContext.state);
+
+*/
+        //     audioBuffer.start();
+
+
+        // gp.start();
+        //  console.log("started gp");
         //player.start();
         //audioBuffer.start();
 
