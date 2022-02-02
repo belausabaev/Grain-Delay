@@ -117,7 +117,7 @@ gp = new Tone.GrainPlayer(audioBuffer.buffer, () => {
   console.log("GrainPlayer loaded!")
   console.log("gp.playbackRate:", gp.playbackRate)
   console.log("gp.grainSize", gp.grainSize)
-}).connect(feedbackDelay11).connect(feedbackDelay12).connect(feedbackDelay3).toDestination();
+}).connect(feedbackDelay8).connect(feedbackDelay11).connect(feedbackDelay3).toDestination();
 //.connect(feedbackDelay).connect(feedbackDelay2).connect(feedbackDelay3).connect(feedbackDelay4).connect(feedbackDelay5).connect(feedbackDelay6).connect(feedbackDelay7).connect(feedbackDelay8).connect(feedbackDelay9).connect(feedbackDelay10).connect(feedbackDelay11).toDestination();
 //.connect(pitchsh).connect(filter).connect(feedbackDelay).toDestination(); 
 // mit convolver -> echo

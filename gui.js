@@ -24,7 +24,7 @@ btnSound.on('click', () => {
     } else {
         Tone.start();
         playing = true;
-        
+        /*
         const recorder = new Tone.Recorder();
         gp.connect(recorder);
         // start recording
@@ -42,8 +42,8 @@ btnSound.on('click', () => {
             anchor.href = url;
             anchor.click();
         }, 70000);
-    
-        //gp.start();
+    */
+        gp.start();
         let len = audioBuffer.buffer.length;
         let att = 0.1;
         let dec = 0.1;
